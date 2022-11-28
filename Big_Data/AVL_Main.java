@@ -1,13 +1,15 @@
 package Big_Data;
 
 import Big_Data.All_Keys.Ordered_List;
+import Big_Data.Generate.Generate;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static Big_Data.Big_Data_Methods.add;
+//import static Big_Data.Big_Data_Methods.add;
 import static Big_Data.Big_Data_Methods.allKeys;
+import static Big_Data.LinkedList.insert_AVL;
 
 public class AVL_Main {
     public static int intro_message(){
@@ -58,6 +60,15 @@ public class AVL_Main {
 
             if (choice == 1) {
                 //generate();
+
+                if(Generate.insertion_sort(Generate.generate())!=null){
+                    LinkedList.Node n = new LinkedList.Node(Generate.insertion_sort(Generate.generate()));
+                    big.add_to_end(n);
+                }
+                else{
+                    System.out.println("Null thingz");
+                }
+
             }
 
             else if (choice == 2) {
@@ -69,6 +80,7 @@ public class AVL_Main {
                     allKeys(big);
                 }
                 else{
+                    //big.inOrder(LinkedList.head);
                     allKeys(big);
                     big.toString();
                     System.out.println();
@@ -83,7 +95,22 @@ public class AVL_Main {
                 System.out.println("Please enter the value you want to add to "+key+" : ");
                 String value = in.next();
                 AVL_Entry new_entry = new AVL_Entry(key, value);
-                add(big,new_entry);
+                LinkedList.Node n = new LinkedList.Node(new_entry);
+                big.add_to_end(n);
+                insert_AVL(n, big.head);
+
+                LinkedList.Node t = big.head;
+                while(t.next!= null){
+
+                    System.out.println(t.element);
+                    System.out.println();
+
+                    t = t.next;
+                }
+
+
+
+
             }
             else if (choice == 4) {
                 // remove(ElasticERL,key)
