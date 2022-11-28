@@ -8,7 +8,7 @@ import static Big_Data.All_Keys.Ordered_List.head;
 public class Big_Data_Methods {
     public static int generate() {
         // O(n)
-        // Generate a random 8 digit number
+        // Generate a random 8-digit number
         // Quick sort to see if it already exists in the list
 
         return 0;
@@ -16,7 +16,6 @@ public class Big_Data_Methods {
 
     public static void allKeys(LinkedList ElasticERL) {
         //return all keys in ElasticERL as a sorted sequence
-
 
         Ordered_List.Node t = Ordered_List.head;
         int counter = 0;
@@ -30,13 +29,14 @@ public class Big_Data_Methods {
 
 
     }
+    //Methods for adding nodes (Trinode restructuring)
 
-    public static void add(LinkedList ElasticERL, AVL_Entry entry) {
-        // add an entry for the given key and value
-        LinkedList.Node n = new LinkedList.Node(entry);
-        ElasticERL.insert_AVL(n, ElasticERL.head);
+    public static void trinode_restructuring(LinkedList.Node n, LinkedList l){
+        //add n to the end
 
     }
+
+
 
     public static void remove(LinkedList ElasticERL, LinkedList.Node key) {
         // remove the entry for the given key;
@@ -75,20 +75,20 @@ public class Big_Data_Methods {
     public static void prevKey(LinkedList ElasticERL, String key) {
         //  return the key for the predecessor of key;
         boolean exists = false;
-        LinkedList.Node t = ElasticERL.head;
+        LinkedList.Node temp = ElasticERL.head;
 
-        while(t.next!=null && t.element!=null){
-            if(t.element.equals(key)){
-                System.out.println("The key before "+key+" is: "+t.prev.element);
+        while(temp.next!=null && temp.element!=null){
+            if(temp.element.equals(key)){
+                System.out.println("The key before "+key+" is: "+temp.prev.element);
                 System.out.println();
                 exists = true;
-                t = ElasticERL.tail.prev;
+                temp = ElasticERL.tail.prev;
             }
-            t = t.next;
+            temp = temp.next;
         }
         if (exists == false){
-            if(t == ElasticERL.head){
-                System.out.println("The here is no key before "+t.element);
+            if(temp == ElasticERL.head){
+                System.out.println("The here is no key before "+temp.element);
             }
             else{
                 System.out.println("The key you have inserted is not in the database!");

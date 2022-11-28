@@ -2,6 +2,8 @@ package Big_Data;
 
 import Big_Data.All_Keys.Ordered_List;
 
+import java.util.Objects;
+
 public class LinkedList {
     public static Node head;
     public static Node tail;
@@ -12,16 +14,16 @@ public class LinkedList {
         String element;
 
 
+        Node parent;
         Node left;
         Node right;
         Node prev;
         Node next;
 
 
-        Node(AVL_Entry new_entry) {
+        public Node(AVL_Entry new_entry) {
             this.element = new_entry.key;
             this.value = new_entry.value;
-
         }
 
         public String getElement() {
@@ -31,7 +33,7 @@ public class LinkedList {
     }
 
     public static int compare(String s1, String s2, int counter){
-        if(s1==s2){
+        if(Objects.equals(s1, s2)){
             return 0;
         }
         while (counter<8){
@@ -55,20 +57,38 @@ public class LinkedList {
         return 100;
     }
 
+
+
     public static void addNode(AVL_Entry new_entry) {
         //Create new node
         Node newNode = new Node(new_entry);
 
         //If list is empty set head and tail to new node
         if (head == null) {
-            head = newNode;
-            tail = newNode;
+            head = tail = newNode;
+
         }
         else {
             insert_AVL(newNode, head);
+
+
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+
+
             //method recurse through the avl tree to insert
         }
+
+
     }
+
+    public static void add_to_end(Node newNode){
+        tail.next = newNode;
+        newNode.prev = tail;
+        tail = newNode;
+    }
+
     /*public static void Create_AVL_Tree(String insert, int idx){
         addNode(insert);
         // Checks if it is the first element
@@ -79,7 +99,9 @@ public class LinkedList {
         }
         inOrder(node.left);
         //System.out.println(node.getElement());
-        Ordered_List.Node new_OD_node = new Ordered_List.Node(node.getElement());
+
+        AVL_Entry new_entry = new AVL_Entry(node.getElement(), "");
+        Ordered_List.Node new_OD_node = new Ordered_List.Node(new_entry);
 
         if(Ordered_List.head == null){
             Ordered_List.head = new_OD_node;

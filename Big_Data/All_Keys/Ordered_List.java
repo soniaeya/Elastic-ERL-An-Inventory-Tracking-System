@@ -6,15 +6,16 @@ public class Ordered_List{
 
     public static class Node {
         public String element;
+        public String value = "";
         public Node next;
         public Node prev;
 
-        public Node() {
+        public Node(AVL_Entry new_entry) {
+            this.element = new_entry.key;
+            this.value = new_entry.value;
+
         }
 
-        public Node(String e) {
-            this.element = e;
-        }
         public String getElement() {
 
             return element;
@@ -31,6 +32,26 @@ public class Ordered_List{
             t = t.next;
         }
         return null;
+    }
+    public static int compare(String s1, String s2, int counter){
+        if(s1==s2){
+            return 0;
+        }
+        while (counter<8){
+
+            if(s1.charAt(counter)< s2.charAt(counter)){
+                //Returns -1 if the first object is smaller than the second object
+                return -1;
+            }
+            else if(s1.charAt(counter) > s2.charAt(counter)){
+                return 1;
+            }
+            else if(s1.charAt(counter) == s2.charAt(counter)){
+                ++counter;
+                compare(s1, s2, counter);
+            }
+        }
+        return 100;
     }
 
 }
