@@ -37,8 +37,9 @@ public class AVL_Main {
         LinkedList big = new LinkedList();
 
         try {
+            //File myObj = new File("src/million.txt");
+            //File myObj = new File("src/500k.txt");
             File myObj = new File("src/5.txt");
-            //File myObj = new File("src/500000.txt");
 
             Scanner myReader = new Scanner(myObj);
 
@@ -66,6 +67,15 @@ public class AVL_Main {
                 if(Generate.insertion_sort(Generate.generate())!=null){
                     LinkedList.Node n = new LinkedList.Node(Generate.insertion_sort(Generate.generate()));
                     //add node to avl tree
+                    big.insert_AVL(n, big.head);
+
+
+                    //O(n)
+                    big.set_height();
+                    big.insert_height();
+
+                    //O(log(n))
+                    big.trinode_restructuring(n);
                 }
                 else{
                     System.out.println("Null thingz");
@@ -74,20 +84,9 @@ public class AVL_Main {
             }
 
             else if (choice == 2) {
-                //All_Keys.Ordered_List.allKeys(ElasticERL);
-                //Ordered_List od = new Ordered_List();
 
-                if(Ordered_List.head == null){
-                    big.inOrder(LinkedList.head);
-                    allKeys(big);
-                }
-                else{
-                    //big.inOrder(LinkedList.head);
-                    allKeys(big);
-                    big.toString();
+                    big.inOrder(big.head);
                     System.out.println();
-                }
-
 
 
             }
@@ -98,82 +97,32 @@ public class AVL_Main {
                 String value = in.next();
                 AVL_Entry new_entry = new AVL_Entry(key, value);
                 LinkedList.Node n = new LinkedList.Node(new_entry);
-
                 //O(log(n))
-
                 //big.addNode(new_entry);
                 big.insert_AVL(n, big.head);
-
-
                 //O(n)
                 big.set_height();
                 big.insert_height();
-/*
-                LinkedList.Node t = big.head;
-
-
-                while(t!= null){
-                    System.out.println("Element: "+ t.element);
-                    System.out.println("Height: "+ t.real_height);
-                    try{
-                        System.out.println("Parent: "+ t.parent.element);
-                        System.out.println("Parent Height: "+ t.parent.real_height);
-                    }
-                    catch(Exception e){
-                        System.out.println("No parent");
-                    }
-                    try{
-                        System.out.println("Left: "+ t.left.element);
-                        System.out.println("Left Height: "+ t.left.real_height);
-                    }
-                    catch(Exception e){
-                        System.out.println("No left");
-                    }
-                    try{
-                        System.out.println("Right: "+ t.right.element);
-                        System.out.println("Right Height: "+ t.right.real_height);
-                    }
-                    catch(Exception e){
-                        System.out.println("No right");
-
-                    }
-                    try{
-                        System.out.println("Next: "+ t.next.element);
-                        //System.out.println("Height: "+ t.next.real_height);
-                    }
-                    catch(Exception e){
-                        System.out.println("Next: Next is null");
-
-                    }
-
-                    System.out.println();
-                    t = t.next;
-
-                }
-*/
-
-
-
                 //O(log(n))
                 big.trinode_restructuring(n);
-
                 //Test the values
-
-
-
-
-
             }
             else if (choice == 4) {
-                // remove(ElasticERL,key)
+                System.out.println("Please enter the key you want to remove: ");
+                String key = in.next();
+                AVL_Entry entry = new AVL_Entry(key, "");
+                LinkedList.Node temp = new LinkedList.Node(entry);
+                big.node_search(temp, big.head);
+            }
 
-            } else if (choice == 5) {
-                //getValues(ElasticERL,key)
+            else if (choice == 5) {
+                System.out.println("Please enter the key whose value you are looking for: ");
+                String key = in.next();
+                Big_Data_Methods.getValues(big,key);
 
             } else if (choice == 6) {//nextKey(ElasticERL,key)
 
                 System.out.println("Please enter the key you want to look up: ");
-
                 String s = in.next();
                 //String s = "05716101";
                 Big_Data_Methods.nextKey(big, s);

@@ -7,29 +7,29 @@ import java.util.Objects;
 public class LinkedList {
     public static Node head;
     public static Node tail;
+    public static Node od_head;
+    public static Node od_tail;
 
     public static class Node {
+        String value;
 
-        String value = "";
         String element;
-
-
         Node parent;
         Node left;
         Node right;
         Node prev;
         Node next;
+        public Node od_prev;
+        public Node od_next;
+
         int height = 1;
         int real_height;
-
-
         public Node(AVL_Entry new_entry) {
             this.element = new_entry.key;
             this.value = new_entry.value;
+
         }
-
         public String getElement() {
-
             return element;
         }
     }
@@ -89,21 +89,19 @@ public class LinkedList {
             return;
         }
         inOrder(node.left);
-        //System.out.println(node.getElement());
-
-        AVL_Entry new_entry = new AVL_Entry(node.getElement(), "");
-        Ordered_List.Node new_OD_node = new Ordered_List.Node(new_entry);
-
-        if(Ordered_List.head == null){
-            Ordered_List.head = new_OD_node;
-            Ordered_List.tail = new_OD_node;
+        if(od_head == null){
+            od_head = node;
+            od_tail = node;
+            od_tail.next = null;
+            od_tail.prev = null;
         }
         else{
-            Ordered_List.Node temp = Ordered_List.tail;
-            new_OD_node.prev = temp;
-            Ordered_List.tail.next = new_OD_node;
-            Ordered_List.tail = new_OD_node;
+            od_tail.next = node;
+            node.prev = od_tail;
+            od_tail = node;
+            od_tail.next = null;
         }
+        System.out.println(node.element);
         inOrder(node.right);
     }
 
@@ -154,6 +152,9 @@ public class LinkedList {
                 newNode.prev = tail;
                 tail = newNode;
                 tail.next = null;
+
+
+                //sonia add inorder traversal
             }
             else{
                 insert_AVL(newNode, root.right);
@@ -162,6 +163,157 @@ public class LinkedList {
         }
 
     }
+
+    public static void node_search_4_get_values(Node newNode, Node root){
+        if(root == null){
+            return;
+        }
+        //System.out.println("Root is" + root.element);
+
+        if(root.element.equals(newNode.element)){
+            System.out.println("The value is: "+ root.value);
+            System.out.println();
+        }
+        else if (compare(newNode.getElement(),root.getElement(),0) < 0){ //new node < the root values
+            node_search_4_get_values(newNode, root.left);
+        }
+        else
+        {
+            node_search_4_get_values(newNode, root.right);
+        }
+    }
+
+
+
+    public static void node_search(Node newNode, Node root){
+        if(root == null){
+            return;
+        }
+        if(root.getElement().equals(newNode.getElement())){
+            System.out.println("Removing");
+            remove_AVL(root);
+        }
+        else if (compare(newNode.getElement(),root.getElement(),0) < 0){ //new node < the root values
+            node_search(newNode, root.left);
+        }
+        else
+        {
+            node_search(newNode, root.right);
+        }
+    }
+
+    public static void remove_AVL(Node remove){
+        // Node is external
+        if(remove.left == null && remove.right == null){
+
+            remove.prev.next = remove.next;
+            remove.next.prev = remove.prev;
+
+            remove.od_prev.next = remove.od_next;
+
+            remove.od_next.prev = remove.od_prev;
+
+        }
+        // Node is internal
+        // Removing an internal node, Case 1: Left child node is empty, R not empty
+        try{
+            if(remove.left == null && remove.right != null){
+                remove.right.parent = remove.parent;
+                remove.parent.right = remove.right;
+                remove.prev = remove.next;
+                remove.od_prev = remove.od_next;
+                remove = null;
+            }
+        }
+        catch(Exception e){
+        }
+
+        // Removing an internal node, Case 2: Right child node is empty, L not empty
+        try{
+            if(remove.right == null && remove.left != null){
+                remove.right.parent = remove.parent;
+                remove.parent.left = remove.left;
+                remove.prev = remove.next;
+                remove.od_prev = remove.od_next;
+                remove = null;
+            }
+        }
+        catch(Exception e){
+        }
+
+        // Removing an internal node, Case 3: Both R and L not empty
+
+        try{
+            if(remove.left != null && remove.right != null){
+                //Replace the node with the node that follows it in inorder traversal
+                Node follows_remove = remove.od_next;//5
+
+                // 1. Node L = Node Next L
+
+                // Set the follow node's parent
+                //if remove is a left child
+                try{
+                    if(remove.parent.left == remove){
+                        remove.parent.left = follows_remove;
+                        follows_remove.parent = remove.parent;
+                    }
+                }
+                catch(Exception e){
+                }
+
+                //if remove is a right child
+                try{
+                    //if remove is a left child
+                    if (remove.parent.right == remove){
+                        remove.parent.right = follows_remove;
+                        follows_remove.parent = remove.parent;
+                    }
+                }
+                catch(Exception e){
+
+                }
+
+                //set L node
+                follows_remove.left= remove.left;
+                remove.left.parent = follows_remove;
+
+                //set R node
+                follows_remove.right = remove.right;
+                remove.right.parent = follows_remove;
+
+
+                //Remove the node that follows the node in a inorder traversal
+
+                //check if follow_node is a left node
+                if(follows_remove.parent.left == follows_remove){
+
+                    follows_remove.parent.left = null;
+                }
+                //check if follow_node is a right node
+                if(follows_remove.parent.right == follows_remove){
+                    follows_remove.parent.right = null;
+                }
+
+            }
+
+        }
+        catch(Exception e){
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static void set_height(){
         Node n = head;
@@ -181,6 +333,7 @@ public class LinkedList {
 
 
     public static void trinode_restructuring(Node n){
+        // n is the added node
         /*
         System.out.println("Entered Trinode Restructuring ");
         System.out.println("N value = "+n.element);
@@ -191,216 +344,326 @@ public class LinkedList {
 
 
          */
+        n = n.parent;
 
         boolean tri_res = false;
-        //int real_height = tail.height - n.height;
+        //88888888
         boolean cont;
+
         while(n.parent!= null){
+            //  |R height - L height| > 1
+            // R is null, L > 1
+            // L is null, R > 1
 
-            cont = false;
+            Node z = null;
+            Node y= null;
+            Node x = null;
+            //Determine if restructuring is needed
 
-/*
-            System.out.println("n"+n.element);
-            System.out.println("height"+n.real_height);
-            try{
-                System.out.println("left"+n.left.element);
-                System.out.println("left height"+n.left.real_height);
 
-            }
-            catch(Exception e){
-                System.out.println("No left");
-
-            }
-            try{
-                System.out.println("right"+n.right.element);
-                System.out.println("right height"+n.right.real_height);
-
-            }
-            catch(Exception e){
-                System.out.println("No right");
-
-            }
-
-*/
-            //R null, L null
-            if(!(n.left == null && n.right == null)){
-                cont = true;
-            }
-
-            //R null, L 1
-            try{
-                if(n.left == null && n.right.real_height == 1){
-                    cont = true;
-                }
-
-            }
-            catch (Exception e){
-
-            }
-            //R 1, L null
-            try{
-                if(n.left == null && n.right.real_height == 1){
-                    System.out.println(n.element+"r1 l0");
-                    cont = true;
-                }
-            }
-            catch (Exception e){
-            }
 
             try{
-                if (n.parent.left.real_height == n.parent.right.real_height-1){
-                    cont = true;
+                if(n.right == null && n.left.real_height > 1){
+                    if(Math.abs(n.right.real_height - n.left.real_height) > 1){
+                        z = n;
+                        System.out.println("Restructuring needed at: "+ n.element);
+                        tri_res = true;
+
+                    }
                 }
             }
             catch(Exception e){
 
             }
             try{
-                if (n.parent.left.real_height == n.parent.right.real_height){
-                    cont = true;
+                if(n.right == null && n.left.real_height > 1){
+                    z = n;
+                    System.out.println("Restructuring needed at: "+ n.element);
+                    tri_res = true;
                 }
             }
             catch(Exception e){
 
             }
-
             try{
-                if (n.parent.right.real_height ==n.parent.left.real_height-1){
-                    cont = true;
+                if(n.left == null && n.right.real_height > 1){
+                    z = n;
+                    System.out.println("Restructuring needed at: "+ n.element);
+                    tri_res = true;
                 }
             }
             catch(Exception e){
 
             }
+            if(tri_res){
 
+                //Determine which child is y
+                // In terms of height:
+                // R > L then R
+                // L > R then L
+                // R is null then L
+                // L is null then R
 
-            if(cont){
-
-
-
-                    System.out.println("Element: "+ n.element);
-                    System.out.println("Height Element: "+ n.real_height);
-                    try{
-                        System.out.println("Parent: "+ n.parent.element);
-                        System.out.println("Height parent: "+ n.parent.real_height);
+                // R > L then R
+                try{
+                    if(n.right.real_height > n.left.real_height){
+                        y = n.right;
                     }
-                    catch(Exception e){
-                        System.out.println("No parent");
+                }
+                catch(Exception e){
+                }
+
+                // L > R then L
+                try{
+                    if(n.right.real_height < n.left.real_height){
+                        y = n.left;
                     }
-                    try{
-                        System.out.println("Left: "+ n.left.element);
-                        System.out.println("Height left: "+ n.left.real_height);
+                }
+                catch(Exception e){
+                }
+
+                // R is null then L
+                try{
+                    if(n.right==null){
+                        y = n.left;
                     }
-                    catch(Exception e){
-                        System.out.println("No left");
+                }
+                catch(Exception e){
+
+                }
+                // L is null then R
+                try{
+                    if(n.left==null){
+                        y = n.right;
                     }
-                    try{
-                        System.out.println("Right: "+ n.right.element);
-                        System.out.println("Height Right: "+ n.right.real_height);
+                }
+                catch(Exception e){
+                }
+
+
+                //Determine which child is X
+                try{
+                    if(y.right.real_height > y.left.real_height){
+                        x = y.right;
                     }
-                    catch(Exception e){
-                        System.out.println("No right");
+                }
+                catch(Exception e){
+                }
+
+                // L > R then L
+                try{
+                    if(y.right.real_height < y.left.real_height){
+                        x = y.left;
+                    }
+                }
+                catch(Exception e){
+                }
+
+                // R is null then L
+                try{
+                    if(y.right==null){
+                        x = y.left;
+                    }
+                }
+                catch(Exception e){
+
+                }
+                // L is null then R
+                try{
+                    if(y.left==null){
+                        x = y.right;
+                    }
+                }
+                catch(Exception e){
+                }
+
+                //Restructuring
+                //1
+                try{
+                    if(y.right == x && z.right == y){
+                        //1
+                        // X is R of Y and Y is R of Z
+                        y.parent = z.parent;
+                        try{
+                            y.left.parent = z;
+                        }
+                        catch(Exception e){
+                        }
+                        try{
+                            z.right = y.left;
+                        }
+                        catch(Exception e){
+                        }
+                        try{
+                            y.left = z;
+                        }
+                        catch(Exception e){
+                        }
+                        try{
+                            if(z.parent.left == z){
+                                z.parent.left = y;
+                            }
+                            else{
+                                z.parent.right = y;
+                            }
+                        }
+                        catch(Exception e){
+                        }
+                    }
+
+                }
+                catch(Exception e){
+
+                }
+
+
+
+
+
+
+                //2
+                try{
+                    if(y.left == x && z.left == y){
+                        //2
+
+                        // X is L of Y and Y is L of Z
+                        y.parent = z.parent;
+
+                        try{
+                            y.right.parent = z;
+                        }
+                        catch(Exception e){
+
+                        }
+                        try{
+                            z.left = y.right;
+                        }
+                        catch(Exception e){
+
+                        }
+                        try{
+                            y.right = z;
+                        }
+                        catch(Exception e){
+
+                        }
+
+                        try{
+                            if(z.parent.left == z){
+                                z.parent.left = y;
+                            }
+                            else{
+                                z.parent.right = y;
+                            }
+                        }
+                        catch(Exception e){
+                        }
 
                     }
-                    try{
-                        System.out.println("Next: "+ n.next.element);
-                        System.out.println("Height next: "+ n.next.real_height);
+
+                }
+                catch(Exception e){
+
+                }
+
+
+
+                //3
+                try{
+                    if(y.left == x && z.right == y){
+                        y.left = x.right;
+                        x.right = y;
+                        x.parent = z.parent;
+                        x.left = z;
+                        z.parent = x;
+                        z.right = x.left;
+                        try{
+                            if(z.parent.left == z){
+                                z.parent.left = x;
+                            }
+                            else{
+                                z.parent.right = x;
+
+                            }
+
+                        }
+                        catch(Exception e){
+
+                        }
                     }
-                    catch(Exception e){
-                        System.out.println("Next: Next is null");
+
+                }
+                catch(Exception e){
+
+                }
+                // X is L of Y and Y is R of Z
+
+                //4
+                try{
+                    if(y.right == x && z.left == y){
+
+                        y.right = x.left;
+                        z.left = x.right;
+
+                        x.parent = z.parent;
+                        x.left = y;
+                        x.right = z;
+                        z.parent = x;
+
+
+                        try{
+                            if(z.parent.left == z){
+                                z.parent.left = x;
+                            }
+                            else{
+                                z.parent.right = x;
+
+                            }
+
+                        }
+                        catch(Exception e){
+
+                        }
+
 
                     }
 
-                    System.out.println();
+                }
+                catch(Exception e){
+
+                }
+                // X is R of Y and Y is L of Z
 
 
 
-
-
-
-
-                n = n.parent;
-            }
-            else{
-                System.out.println("Trinode Restructuring needed at" + n.element);
-
-
-                //needs restructuring at Node n
-                Node z = n;
-                Node y = null;
-                Node x = null;
-                System.out.println("Z is " + n.element);
-                n = n.parent;
-
-
-                //choose larger element of Z
 
                 /*
-
-                if(n.left == null){
-                    y = n.right;
-                }
-                else if(n.right == null){
-                    y = n.left;
-                }
-
-
-                //88888888
-                else if(n.left.real_height > n.right.real_height){
-                    y = n.left;
-                }
-                else if(n.left.real_height < n.right.real_height){
-                    y = n.right;
-                }
-
-
-
-
-                if(y.left.real_height > y.right.real_height){
-                    x = n.left;
-                }
-                else{
-
-                    x = n.right;
-                }
-
-            System.out.println("Single Rotation");
-
-                //Single Rotation
-                //1
-                if(y!= null && z.right == y && y.right == x){
-                    y.parent = z.parent;
-                    y.left = z;
-                }
-                //2
-                else if(y!= null && z.left == y && y.left == x){
-                    y.parent = z.parent;
-                    y.right = z;
-                }
-                //Double Rotation
-                else if(y!= null &&  z.right == y && y.left == x){
-                    x.parent = z.parent;
-                    x.right = y;
-                    x.left = z;
-                }
-                else if(y!= null && z.left == y && y.right == x){
-                    x.parent = z.parent;
-                    x.right = z;
-                    x.left = y;
-                }
-                System.out.println("Y is " + y.element);
-                System.out.println("Z is " + z.element);
-*/
+                System.out.println("Z is: "+ z.element);
+                System.out.println("Y is: "+ y.element);
+                System.out.println("X is: "+ x.element);
+                 */
 
 
 
 
 
 
-                System.out.println(n.element);
-                n = n.parent;
-                continue;
+
+
+
+
             }
+
+
+
+
+
+
+
+
+            n = n.parent;
+
+
 
 
         }
